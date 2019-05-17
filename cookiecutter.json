@@ -1,0 +1,11 @@
+{
+  "name": "My New Project",
+  "project_name": "{{ cookiecutter.name|lower|replace(' ', '_') }}",
+  "test_name": "test_testname",
+  "test_name_": "{{cookiecutter.test_name|lower|replace(' ', '_') }}",
+  "test_config":{
+  		"base_url": "https://example.com",
+  		"global_step_wait": "0"
+  },
+  "step_config":{}
+}
