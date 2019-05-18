@@ -6,7 +6,7 @@
 #----------------------------------------------------------
 
 import pytest
-from test.helpers import do_steps
+from tests.helpers import do_steps
 
 test_config = {{cookiecutter.test_config}}
 
