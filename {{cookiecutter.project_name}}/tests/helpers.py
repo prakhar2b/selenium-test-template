@@ -9,9 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-
-
-def until_url_changed(driver, max_wait):
+def do_condition(condition, max_wait, driver):
 	# https://seleniumhq.github.io/selenium/docs/api/py/
 	# webdriver_support/selenium.webdriver.support.expected_conditions.html
 	# #selenium.webdriver.support.expected_conditions.url_changes
@@ -26,7 +24,8 @@ def until_url_changed(driver, max_wait):
 	    def __call__(self, driver):
 	        return self.url != driver.current_url
 	"""
-	WebDriverWait(driver, float(max_wait)).until(EC.url_changes(driver))
+	if condition == "url_changed":
+		WebDriverWait(driver, max_wait).until(EC.url_changes(driver))
 
 
 def get_elem(locators, driver):
@@ -156,8 +155,21 @@ def do_steps(step, driver):
 				driver.implicitly_wait(step_wait)
 		
 
+	#########################################################################
+	####                Wait ( Explicit / Implicit)                  ########
+	#########################################################################
+
 	elif step.type == "wait":
-		until_url_changed(driver, step.value)
+		try:
+			flag_until = bool(l.until) # Conditions
+		except Exception as ex:
+			flag_until = 0
+
+		if flag_until:
+			do_condition(step.until, step.value, driver)
+		else:
+			driver.implicitly_wait(step.value)
+			
 		driver.implicitly_wait(step.config.step_wait)
 
 	else:
