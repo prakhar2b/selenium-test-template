@@ -9,7 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-def do_condition(condition, max_wait, driver):
+def wait_condition(condition, max_wait, driver):
 	# https://seleniumhq.github.io/selenium/docs/api/py/
 	# webdriver_support/selenium.webdriver.support.expected_conditions.html
 	# #selenium.webdriver.support.expected_conditions.url_changes
@@ -166,7 +166,7 @@ def do_steps(step, driver):
 			flag_until = 0
 
 		if flag_until:
-			do_condition(step.until, step.value, driver)
+			wait_condition(step.until, step.value, driver)
 		else:
 			driver.implicitly_wait(step.value)
 			
