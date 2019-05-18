@@ -2,5 +2,5 @@
   "name": "Google test",
   "project_name": "{{ cookiecutter.name|lower|replace(' ', '_') }}",
   "test_config":"Enter test config dict here",
-  "test_name": {{cookiecutter.test_config['test_name']|lower|replace(' ', '_') }}
+  "test_name": {{ {{cookiecutter.test_config}}['test_name']|lower|replace(' ', '_') }}
 }
