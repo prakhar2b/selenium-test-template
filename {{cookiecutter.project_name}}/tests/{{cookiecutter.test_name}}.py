@@ -19,7 +19,7 @@ class Objectify(object):
 test_config = {{cookiecutter.test_config}}
 test_config = Objectify(test_config)
 
-def {{cookiecutter.test_name}}(driver_):
+def {{cookiecutter.test_name|lower|replace(' ', '_')}}(driver_):
 	ase_url = test_config.base_url
 	global_step_wait = test_config.global_step_wait
 	steps = test_config.steps
