@@ -26,10 +26,10 @@ def until_url_changed(driver, max_wait):
 	    def __call__(self, driver):
 	        return self.url != driver.current_url
 	"""
-	WebDriverWait(driver, max_wait).until(EC.url_changes(driver))
+	WebDriverWait(driver, float(max_wait)).until(EC.url_changes(driver))
 
 
-def get_elem(locators):
+def get_elem(locators, driver):
 	"""
 	Supported locator type : attribute, css_selector, xpath
 	"""
@@ -38,14 +38,20 @@ def get_elem(locators):
 		if not elem:
 			if l.type == "attribute":
 				try:
-					elem = driver.find_element_by_css_selector("[{}={}]".format(l.key, l.value))
+					if l.key == "name":
+						elem = driver.find_element_by_name(l.value)
+					elif l.key == "id":
+						elem = driver.find_element_by_id(l.value)
+					else:
+						elem = driver.find_element_by_css_selector("[{}={}]".format(l.key, l.value))
+
 				except Exception as ex:
 					print(ex)
 
 			elif l.type =="css_selector":
 				try:
 					elems = driver.find_elements_by_css_selector(l.value)
-					position = l.position - 1
+					position = int(l.position) - 1
 					elem = elems[position] if len(elems) >= position else None
 				except Exception as ex:
 					print(ex)
@@ -71,7 +77,7 @@ def do_steps(step, driver):
 	if step.type == "input":
 		text = step.text
 		step_wait = step.config.step_wait
-		elem = get_elem(step.locators)
+		elem = get_elem(step.locators, driver)
 
 		if not elem:
 			raise Exception("Test Failed at step 1")
@@ -81,7 +87,7 @@ def do_steps(step, driver):
 
 	elif step.type == "click":
 		step_wait = step.config.step_wait
-		elem = get_elem(step.locators)
+		elem = get_elem(step.locators, driver)
 		if not elem:
 			raise Exception("Test Failed at Step 2")
 		elem_type = elem.get_attribute("type")
@@ -93,7 +99,7 @@ def do_steps(step, driver):
 
 	elif step.type == "assertion":
 		step_wait = step.config.step_wait
-		elem = get_elem(step.locators)
+		elem = get_elem(step.locators, driver)
 
 		assertion_type = step.assertionType
 
@@ -111,7 +117,6 @@ def do_steps(step, driver):
 		
 
 	elif step.type == "wait":
-		print("In here")
 		until_url_changed(driver, step.value)
 		driver.implicitly_wait(step.config.step_wait)
 
