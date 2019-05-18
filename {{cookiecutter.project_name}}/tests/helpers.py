@@ -142,7 +142,7 @@ def do_steps(step, driver):
 		step.subtype = textbox/ radiobutton etc
 		"""
 
-		elem = get_elem(step.locators)
+		elem = get_elem(step.locators, driver)
 
 		if not elem:
 			raise Exception("No element found. Test Failed.")
@@ -158,7 +158,7 @@ def do_steps(step, driver):
 	#########################################################################
 
 	elif step.type == "click":
-		elem = get_elem(step.locators)
+		elem = get_elem(step.locators, driver)
 
 		if not elem:
 			raise Exception("No element found. Test Failed.")
@@ -180,7 +180,7 @@ def do_steps(step, driver):
 		assertion_type = step.assertionType
 
 		if assertion_type == "textExists":
-			elem = get_elem(step.locators)
+			elem = get_elem(step.locators, driver)
 			if not elem:
 				raise Exception("No element found. Test Failed.")
 			assert elem.text.__contains__(step.value)
@@ -190,7 +190,7 @@ def do_steps(step, driver):
 			if assertion_type == "elementNotExists":
 
 				try:
-					elem = get_elem(step.locators)
+					elem = get_elem(step.locators, driver)
 					assert False, "Found element with id idres"
 
 				except Exception:
@@ -202,6 +202,7 @@ def do_steps(step, driver):
 	#########################################################################
 
 	elif step.type == "wait":
+
 		try:
 			flag_until = bool(l.until) # Conditions
 		except Exception as ex:
