@@ -2,10 +2,5 @@
   "name": "My New Project",
   "project_name": "{{ cookiecutter.name|lower|replace(' ', '_') }}",
   "test_name_": "{{cookiecutter.test_name|lower|replace(' ', '_') }}",
-  "test_config":{
-  		"test_name": "test_xyz",
-  		"base_url": "https://example.com",
-  		"global_step_wait": "0",
-  		"steps": "List of steps"
-  }
+  "test_config":"Enter test config dict here"
 }
