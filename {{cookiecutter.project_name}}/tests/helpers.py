@@ -37,14 +37,12 @@ def get_elem(locators):
 	for l in locators:
 		if not elem:
 			if l.type == "attribute":
-				print("attr")
 				try:
 					elem = driver.find_element_by_css_selector("[{}={}]".format(l.key, l.value))
 				except Exception as ex:
 					print(ex)
 
 			elif l.type =="css_selector":
-				print("css")
 				try:
 					elems = driver.find_elements_by_css_selector(l.value)
 					position = l.position - 1
@@ -53,14 +51,11 @@ def get_elem(locators):
 					print(ex)
 
 			elif l.type == "xpath":
-				print("xpath")
 				try:
 					#elem = driver.find_element_by_xpath(l.value)
 					elem = driver.find_element_by_xpath("//div[@id='topstuff']/div/div/p")
 
 					# TO-DO : correct error in yaml file
-					print(l.value)
-					#elem = driver.find_element_by_xpath("//div[@id='topstuff']/div/div/p")
 				except Exception as ex:
 					print(ex)
 		else:
@@ -99,20 +94,14 @@ def do_steps(step, driver):
 	elif step.type == "assertion":
 		step_wait = step.config.step_wait
 		elem = get_elem(step.locators)
-		print("elem")
-		print(elem)
 
 		assertion_type = step.assertionType
 
 		if assertion_type == "textExists":
-			print("here - text exist")
-			print(elem.text)
 			assert elem.text.__contains__(step.value)
 			driver.implicitly_wait(step_wait)
-			print("now what?")
 		else:
 			if assertion_type == "elementNotExists":
-				print("here - element doesn't exist")
 				try:
 					elem = get_elem(step.locators)
 					assert False, "Found element with id idres"
