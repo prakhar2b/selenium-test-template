@@ -108,52 +108,94 @@ def get_elem(locators, driver):
 
 	return elem
 
+
 def do_steps(step, driver):
 	"""
-	interface for all the supported selenium test steps
+	A Step can be a user action of type:
+		1. Input (Enter Text)
+		2. Click, Double click
+		3. Wait        =>   Implicit or Explicit
+		4. Assertion
+		5. Drag and drop, etc.
 	"""
 
+	step_wait = step.config.step_wait
+
+	#########################################################################
+	####                        Input                                ########
+	#########################################################################
+
 	if step.type == "input":
-		text = step.text
-		step_wait = step.config.step_wait
-		elem = get_elem(step.locators, driver)
+		"""
+		Different type of steps have different possible attributes.
+		You are open to play along with the yaml spec and make 
+		any changes as you deem fit.
+
+		To support dynamic input fields like -
+			1. Text Box (Enter Text)
+			2. Radio Button
+			3. Check Box/ Drop Down etc.
+
+		We need to have a separate parameter in yaml input file
+
+		step.type = input
+		step.subtype = textbox/ radiobutton etc
+		"""
+
+		elem = get_elem(step.locators)
 
 		if not elem:
-			raise Exception("Test Failed at step 1")
+			raise Exception("No element found. Test Failed.")
 
-		elem.send_keys(text)
-		driver.implicitly_wait(step_wait)
+		if step.subtype == "textbox":
+			text = step.text
+			elem.send_keys(text)
+
+
+
+	#########################################################################
+	####                        Click                                ########
+	#########################################################################
 
 	elif step.type == "click":
-		step_wait = step.config.step_wait
-		elem = get_elem(step.locators, driver)
+		elem = get_elem(step.locators)
+
 		if not elem:
-			raise Exception("Test Failed at Step 2")
+			raise Exception("No element found. Test Failed.")
+
 		elem_type = elem.get_attribute("type")
+
 		if elem_type == "submit":
 			elem.submit()
 		else:
 			elem.click()
-		driver.implicitly_wait(step_wait)
+
+
+	#########################################################################
+	####                        Assertion                            ########
+	#########################################################################
 
 	elif step.type == "assertion":
-		step_wait = step.config.step_wait
-		elem = get_elem(step.locators, driver)
 
 		assertion_type = step.assertionType
 
 		if assertion_type == "textExists":
+			elem = get_elem(step.locators)
+			if not elem:
+				raise Exception("No element found. Test Failed.")
 			assert elem.text.__contains__(step.value)
-			driver.implicitly_wait(step_wait)
+			
 		else:
+
 			if assertion_type == "elementNotExists":
+
 				try:
 					elem = get_elem(step.locators)
 					assert False, "Found element with id idres"
+
 				except Exception:
 					assert True
-				driver.implicitly_wait(step_wait)
-		
+				
 
 	#########################################################################
 	####                Wait ( Explicit / Implicit)                  ########
@@ -169,8 +211,10 @@ def do_steps(step, driver):
 			wait_condition(step.until, step.value, driver)
 		else:
 			driver.implicitly_wait(step.value)
-			
+
 		driver.implicitly_wait(step.config.step_wait)
 
 	else:
 		raise Exception("The step type is not supported.")
+
+	driver.implicitly_wait(step_wait)
