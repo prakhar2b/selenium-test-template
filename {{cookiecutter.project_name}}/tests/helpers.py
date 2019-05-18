@@ -31,43 +31,83 @@ def until_url_changed(driver, max_wait):
 
 def get_elem(locators, driver):
 	"""
-	Supported locator type : attribute, css_selector, xpath
+	Supported locator type : (Ref- https://selenium-python.readthedocs.io/locating-elements.html)
+		1. Attribute (id, name) => {key, value}
+		2. CSS Selectors        => {value}
+		3. Xpath                => {value}
+		4. Tag
+		5. Link text (Complete/ Partial)
+		6. Class name
+
+	Note:
+		1. You can specify multiple locators which will be checked in successive order if previous ones fail.
+		2. If position is specified, expect multiple matching elements
+
 	"""
-	elem = None
+	elems = None
+
+
 	for l in locators:
-		if not elem:
+		if elems:
+			break
+		else:
+			#
+			try:
+				p_flag = bool(l.position) # Position
+			except Exception as ex:
+				p_flag = 0
+
+			#########################################################################
+			####                  By Attribute (name, id)                    ########
+			#########################################################################
+
 			if l.type == "attribute":
 				try:
 					if l.key == "name":
-						elem = driver.find_element_by_name(l.value)
+						elems = driver.find_elements_by_name(l.value) if p_flag else \
+								driver.find_element_by_name(l.value)
+
 					elif l.key == "id":
-						elem = driver.find_element_by_id(l.value)
+						elems = driver.find_elements_by_id(l.value) if p_flag else \
+								driver.find_element_by_id(l.value)
+
 					else:
-						elem = driver.find_element_by_css_selector("[{}={}]".format(l.key, l.value))
+						elems = driver.find_elements_by_css_selector("[{}={}]".format(l.key, l.value)) if p_flag else \
+								driver.find_element_by_css_selector("[{}={}]".format(l.key, l.value))
+
 
 				except Exception as ex:
 					print(ex)
+
+			#########################################################################
+			####                    By CSS Selector                          ########
+			#########################################################################
 
 			elif l.type =="css_selector":
 				try:
-					elems = driver.find_elements_by_css_selector(l.value)
-					position = int(l.position) - 1
-					elem = elems[position] if len(elems) >= position else None
+					elems = driver.find_elements_by_css_selector(l.value) if p_flag else \
+							driver.find_element_by_css_selector(l.value)
+
 				except Exception as ex:
 					print(ex)
+
+			#########################################################################
+			####                    By CSS xpath                             ########
+			#########################################################################
 
 			elif l.type == "xpath":
 				try:
-					#elem = driver.find_element_by_xpath(l.value)
-					elem = driver.find_element_by_xpath("//div[@id='topstuff']/div/div/p")
+					elems = driver.find_elements_by_xpath(l.value)  if p_flag else \
+							driver.find_element_by_xpath(l.value)
 
-					# TO-DO : correct error in yaml file
 				except Exception as ex:
 					print(ex)
-		else:
-			break
-	return elem
 
+	if  p_flag:
+		position = int(l.position) - 1
+		elem = elems[position] if len(elems) >= position else None
+
+	return elem
 
 def do_steps(step, driver):
 	"""
