@@ -105,6 +105,8 @@ def get_elem(locators, driver):
 	if  p_flag:
 		position = int(l.position) - 1
 		elem = elems[position] if len(elems) >= position else None
+	else:
+		elem = elems
 
 	return elem
 
