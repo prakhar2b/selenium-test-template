@@ -1,6 +1,4 @@
 {
   "name": "Google test",
-  "project_name": "{{ cookiecutter.name|lower|replace(' ', '_') }}",
-  "test_config":"Enter test config dict here",
-  "test_name": "test_run"
+  "project_name": "{{ cookiecutter.name|lower|replace(' ', '_') }}"
 }
